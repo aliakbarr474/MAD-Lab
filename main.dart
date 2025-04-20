@@ -1,47 +1,65 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const WidgetApp());
-}
+void main() => runApp(MyApp());
 
-class WidgetApp extends StatelessWidget {
-  const WidgetApp({super.key});
-
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'Responsive Grid View',
+      home: ResponsiveGridPage(),
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Flutter Widget App'),
-          centerTitle: true,
-        ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.network(
-              'https://images.unsplash.com/photo-1741557571786-e922da981949?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-              height: 200,
-              width: 300,
-            ),
-            const SizedBox(height: 20),
+    );
+  }
+}
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: const [
-                Icon(Icons.star, size: 40, color: Colors.blue),
-                Text(
-                  'Flutter Widgets',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                Icon(Icons.favorite, size: 40, color: Colors.red),
-              ],
+class ResponsiveGridPage extends StatelessWidget {
+  final List<String> imageUrls = [
+    // Online images
+    'https://picsum.photos/200/300',
+    'https://picsum.photos/250/300',
+    'https://picsum.photos/300/300',
+    'https://picsum.photos/200/250',
+    'https://picsum.photos/300/250',
+    'https://picsum.photos/240/340',
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Responsive Grid')),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          int crossAxisCount = (constraints.maxWidth ~/ 150).toInt();
+
+          return GridView.builder(
+            padding: EdgeInsets.all(10),
+            itemCount: imageUrls.length,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: crossAxisCount,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
             ),
-            const Spacer(),
-            ElevatedButton(onPressed: () {}, child: const Text('Click Me')),
-            const SizedBox(height: 20),
-          ],
-        ),
+            itemBuilder: (context, index) {
+              final imageUrl = imageUrls[index];
+              final isNetwork = imageUrl.startsWith('http');
+
+              return Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child:
+                      isNetwork
+                          ? Image.network(imageUrl, fit: BoxFit.cover)
+                          : Image.asset(imageUrl, fit: BoxFit.cover),
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }
